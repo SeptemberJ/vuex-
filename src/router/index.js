@@ -1,14 +1,23 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import HelloWorld from '@/components/HelloWorld'
+import Login from '@/pages/Login/Login'
+import Screen from '@/pages/Screen/Screen'
 
-
-let routes = [{
+let routes = [
+	{
         path: '/',
-        component: HelloWorld,
+        component: Screen,
         name: '',
         hidden: true
-    }]
+    },
+    {
+        path: '/Login',
+        component: Login,
+        name: '登录',
+        hidden: true
+    }
+]
 export default routes;
 //Vue.use(Router)
 
