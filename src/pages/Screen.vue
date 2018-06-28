@@ -1,4 +1,5 @@
 <template>
+<!-- <div id="main" style="width: 600px;height: 400px;"></div> -->
 	<div id="myChart" :style="{width: '100%', minHeight: height}"></div>
 </template>
 <script>
@@ -6,11 +7,9 @@ import Vue from 'vue'
 import axios from 'axios'
 import echarts from 'echarts'
 import Mock from 'mockjs'
-import { mapGetters } from 'vuex'
-import { mapActions } from 'vuex'
 
 var schema = [
-	{name: 'date', index: 0, text: '时间'},
+	{name: 'date', index: 0, text: '日期'},
 	{name: 'CO', index: 1, text: '一氧化碳（CO）'},
     {name: 'CO2', index: 2, text: '二氧化碳（CO2）'},
     {name: 'PM10', index: 3, text: 'PM10'},
@@ -30,8 +29,7 @@ var schema = [
 			    ],
 			    legend: {
 			        y: 'top',
-			        //data: ['普陀区','徐汇区','闵行区'],
-			        data: [],
+			        data: ['普陀区','徐汇区','闵行区'],
 			        textStyle: {
 			            color: '#fff',
 			            fontSize: 16
@@ -48,28 +46,23 @@ var schema = [
 			        backgroundColor: '#222',
 			        borderColor: '#777',
 			        borderWidth: 1,
-			        textAlign:'left',
 			        formatter: function (obj) {
 			            var value = obj.value;
 			            return '<div style="border-bottom: 1px solid rgba(255,255,255,.3); font-size: 18px;padding-bottom: 7px;margin-bottom: 7px">'
 			                + obj.seriesName + ' ' + value[0] + '日：'
 			                + value[0]
 			                + '</div>'
-			                + '<div style="font-size: 12px;text-align:left;">'
-			                + schema[1].text + '：' + value[1] + '</div>'
-			                + '<div style="font-size: 12px;text-align:left;">'
-			                + schema[2].text + '：' + value[2] + '</div>'
-			                + '<div style="font-size: 12px;text-align:left;">'
-			                + schema[3].text + '：' + value[3] + '</div>'
-			                + '<div style="font-size: 12px;text-align:left;">'
-			                + schema[4].text + '：' + value[4] + '</div>'
-			                + '<div style="font-size: 12px;text-align:left;">'
-			                + schema[5].text + '：' + value[5] + '</div>'
+			                //+ schema[0].text + '：' + value[0] + '<br>'
+			                + schema[1].text + '：' + value[1] + '<br>'
+			                + schema[2].text + '：' + value[2] + '<br>'
+			                + schema[3].text + '：' + value[3] + '<br>'
+			                + schema[4].text + '：' + value[4] + '<br>'
+			                + schema[5].text + '：' + value[5] + '<br>'
 			        }
 			    },
 			    xAxis: {
 			        type: 'value',
-			        name: '时间',
+			        name: '日期',
 			        nameGap: 16,
 			        nameTextStyle: {
 			            color: '#fff',
@@ -109,7 +102,7 @@ var schema = [
 			            top: '10%',
 			            dimension: 6,
 			            min: 0,
-			            max: 50,
+			            max: 120,
 			            text:['大','小'],//两端的文本['High', 'Low']
 			            itemWidth: 30,
 			            itemHeight: 120,
@@ -117,16 +110,16 @@ var schema = [
 			            hoverLink:true,  //打开 hoverLink 功能时，鼠标悬浮到 visualMap 组件上时，鼠标位置对应的数值 在 图表中对应的图形元素，会高亮
 			            seriesIndex:0,//指定取哪个系列的数据，即哪个系列的 series.data  
 			            precision: 0.1,   //展式的小数点精度
-			            text: ['圆形大小：CO'],
+			            text: ['圆形大小：PM2.5'],
 			            textGap: 30,   //两端文字与主体之间的距离
 			            textStyle: {
 			                color: '#fff'
 			            },
 			            inRange: {
-			                symbolSize: [10, 50]
+			                symbolSize: [50, 100]
 			            },
 			            outOfRange: {
-			                symbolSize: [10, 50],
+			                symbolSize: [50, 100],
 			                color: ['rgba(255,255,255,.2)']
 			            },
 			            controller: {
@@ -171,7 +164,20 @@ var schema = [
 			        */
 			    ],
 			    series: [
-			        /*
+			        {
+			            name: '普陀区',
+			            type: 'scatter',
+			            itemStyle: {
+						    normal: {
+						        opacity: 0.8,
+						        shadowBlur: 10,
+						        shadowOffsetX: 0,
+						        shadowOffsetY: 0,
+						        shadowColor: 'rgba(0, 0, 0, 0.5)'
+						    }
+						},
+			            data: []
+			        },
 			        {
 			            name: '徐汇区',
 			            type: 'scatter',
@@ -200,7 +206,6 @@ var schema = [
 						},
 			            data: []
 			        }
-			        */
 			        
 			    ]
 			},
@@ -209,18 +214,18 @@ var schema = [
       }
     },
     mounted() {
-      //this.drawLine()
+      this.drawLine()
       
     },
     created() {
     	this.height = document.documentElement.clientHeight + 'px'
-    	this.ConnectFn()
+    	//this.ConnectFn()
+    	this.GetData()
 
+      
+      
     },
     computed: {
-    	...mapGetters([
-	      'getRegionList'
-	    ]),
       
     },
     watch: {
@@ -246,14 +251,18 @@ var schema = [
 
     },
     methods: {
-    	...mapActions([
-	      'UpdateRegionList'
-	    ]),
     	drawLine(){
-    		console.log('draw---')
-    		console.log(this.option)
 			let myChart = this.$echarts.init(document.getElementById('myChart'))
 			myChart.setOption(this.option);
+			/*
+			setTimeout(function(){
+			    window.onresize = ()=>{
+			    	this.height = document.documentElement.clientHeight + 'px'
+				    myChart.resize(); 
+				}
+			},200)
+			*/
+
     	},
     	MockData(){
     		axios.get('static/json/charts.json',
@@ -300,88 +309,41 @@ var schema = [
 	            //console.log('Connected: ' + frame);
 	            stompClient.subscribe('/topic/getResponse', function(respnose){ //订阅/topic/getResponse 目标发送的消息。这个是在控制器的@SendTo中定义的。
 	            	console.log('返回------------------------------------')
-	            	//清空之前的
-	            	That.option.series = []
-	            	That.option.legend.data = []
-	            	//横坐标 0 纵坐标 1 大小 最后第二个
+	            	//debugger
+	            	//console.log(respnose.body)
 	            	let ResBody = JSON.parse(respnose.body)
 	            	let List = JSON.parse(ResBody.responseMessage)
-	            	let ComparedList = {}
-	            	let temp = List.hkyList //List.hkyList.slice(0,31)
-	            	
-	            	temp.map((item,idx)=>{
+	            	let ComparedList = []
+	            	List.hkyList.map((item,idx)=>{
 	            		let TempObj = []
-	            		if(item.address in ComparedList){  //已存在这个区直接push
-	            			TempObj.push(ComparedList[item.address].length + 1)
+	            		TempObj.push(idx + 1)
+            			TempObj.push(item.CO)
+            			TempObj.push(item.CO2)
+            			TempObj.push(item.PM10)
+            			TempObj.push(item.PM25)
+            			TempObj.push(item.VOCs)
+            			TempObj.push(item.PM25)
+            			ComparedList.push(TempObj)
+	            		/*
+	            		if(item.registermaid == '37-FF-D7-05-4D-4B-35-34-19-71-22-43'){
+	            			let TempObj = []
+	            			TempObj.push(idx + 1)
 	            			TempObj.push(item.CO)
 	            			TempObj.push(item.CO2)
 	            			TempObj.push(item.PM10)
 	            			TempObj.push(item.PM25)
 	            			TempObj.push(item.VOCs)
-	            			TempObj.push(item.CO)
-	            			ComparedList[item.address].push(TempObj)
-	            		}else{                             //不存在这个区加区后push
-	            			//添加That.option.series
-	            			let seriesItem = {
-					            name: item.address,
-					            type: 'scatter',
-					            itemStyle: {
-								    normal: {
-								        opacity: 0.8,
-								        shadowBlur: 10,
-								        shadowOffsetX: 0,
-								        shadowOffsetY: 0,
-								        shadowColor: 'rgba(0, 0, 0, 0.5)'
-								    }
-								},
-					            data: []
-					        }
-	            			That.option.series.push(seriesItem)
-	            			That.option.legend.data.push(item.address)
-	            			ComparedList[item.address]=[]
-	            			TempObj.push(1)
-	            			TempObj.push(item.CO)
-	            			TempObj.push(item.CO2)
-	            			TempObj.push(item.PM10)
 	            			TempObj.push(item.PM25)
-	            			TempObj.push(item.VOCs)
-	            			TempObj.push(item.CO)
-	            			ComparedList[item.address].push(TempObj)
+	            			ComparedList.push(TempObj)
 	            		}
+	            		*/
 	            	})
-	            	That.option.series.map((seriesItem,seriesIteIdx)=>{
-	            		if(seriesItem.name in ComparedList){
-	            			seriesItem.data = ComparedList[seriesItem.name]
-	            		}
-	            	})
+	            	That.option.series[0].data = ComparedList
+
 	            	console.log(ComparedList)
-	            	console.log(That.option.series)
-	            	console.log(That.option.legend.data)
-	            	That.drawLine()
-	            	
 	            });
 	        });
 	    },
-	    GetRegionList(){
-	    	console.log(this.$store.state.RegionList)
-	    	if(this.$store.state.RegionList.length==0){
-	    		axios.get('http://205.168.1.112:8081/webSoket/cityList',
-				).then((res)=> {
-					let tempCityList = []
-					res.data.cityList.map((item,idx)=>{
-						tempCityList.push(item.city)
-					})
-					this.UpdateRegionList(tempCityList)
-					this.option.legend.data = tempCityList
-					this.GetRegionList()
-				}).catch((error)=> {
-					console.log(error)
-				})
-	    	}else{
-	    		this.ConnectFn()
-	    	}
-	    	
-	    }
         
 
     }

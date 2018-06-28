@@ -214,7 +214,9 @@ var schema = [
     },
     created() {
     	this.height = document.documentElement.clientHeight + 'px'
-    	this.ConnectFn()
+    	
+    	//this.GetData()
+    	this.GetRegionList()
 
     },
     computed: {
@@ -300,9 +302,6 @@ var schema = [
 	            //console.log('Connected: ' + frame);
 	            stompClient.subscribe('/topic/getResponse', function(respnose){ //订阅/topic/getResponse 目标发送的消息。这个是在控制器的@SendTo中定义的。
 	            	console.log('返回------------------------------------')
-	            	//清空之前的
-	            	That.option.series = []
-	            	That.option.legend.data = []
 	            	//横坐标 0 纵坐标 1 大小 最后第二个
 	            	let ResBody = JSON.parse(respnose.body)
 	            	let List = JSON.parse(ResBody.responseMessage)
@@ -337,7 +336,6 @@ var schema = [
 					            data: []
 					        }
 	            			That.option.series.push(seriesItem)
-	            			That.option.legend.data.push(item.address)
 	            			ComparedList[item.address]=[]
 	            			TempObj.push(1)
 	            			TempObj.push(item.CO)
@@ -356,7 +354,6 @@ var schema = [
 	            	})
 	            	console.log(ComparedList)
 	            	console.log(That.option.series)
-	            	console.log(That.option.legend.data)
 	            	That.drawLine()
 	            	
 	            });

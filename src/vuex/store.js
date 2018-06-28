@@ -8,7 +8,8 @@ Vue.use(Vuex)
 // 应用初始状态
 const state = {
     count: 10,
-    ifSpin:false
+    ifSpin:false,
+    RegionList:[]
 }
 
 // 定义所需的 mutations
@@ -21,6 +22,9 @@ const mutations = {
     },
     TOGGLESPIN(state) {
         state.ifSpin = !state.ifSpin
+    },
+    UPDATEREGIONLIST(state) {
+        state.RegionList = state
     },
 }
 

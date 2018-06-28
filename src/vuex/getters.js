@@ -5,3 +5,6 @@ export const getCount = state => {
 export const getSpin = state => {
     return state.ifSpin
 }
+export const getRegionList = state => {
+    return state.RegionList
+}

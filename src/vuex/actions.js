@@ -9,3 +9,7 @@ export const decrement = ({commit}) => {
 export const ToggleSpin = ({commit}) => {
     commit('TOGGLESPIN')
 }
+//update Region
+export const UpdateRegionList = ({commit}) => {
+    commit('UPDATEREGIONLIST')
+}
